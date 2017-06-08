@@ -17,11 +17,11 @@ class View {
     console.log('_______________________________________________________________');
     console.log('                            Help Menu                          ');
     console.log('‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾');
-    console.log(' list                           Show all ToDo list'              );
-    console.log(' add <task>                     Adding new task'                 );
-    console.log(' delete <task_id>               Delete task by Id'               );
-    console.log(' complete <task_id>             Mark task as complete by Id'     );
-    console.log(' uncompleted <task_id>          Mark task as uncompeleted by Id' );
+    console.log(' list                            Show all ToDo list'              );
+    console.log(' add <task>                      Adding new task'                 );
+    console.log(' delete <task_id>                Delete task by Id'               );
+    console.log(' completed <task_id>             Mark task as complete by Id'    );
+    console.log(' uncompleted <task_id>           Mark task as uncompeleted by Id' );
     console.log('_______________________________________________________________');
   }
 
