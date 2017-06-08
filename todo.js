@@ -1,3 +1,6 @@
-'use strict';
+const TodoController = require('./todo_controller');
 
-//write your code here
+const commands = process.argv.slice(2);
+
+const todoController = new TodoController();
+todoController.processCommand(commands);
