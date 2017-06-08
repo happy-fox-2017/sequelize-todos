@@ -32,7 +32,6 @@ class Controller {
       break;
       case "add":
       return this.add(new Task(parameter))
-      // this.view.confirmAddTask(parameter)
       break;
       case "task":
       this.showTask(parameter);
@@ -40,20 +39,18 @@ class Controller {
       case "tag":
       let paramArr = parameter.split(" ");
       let id = paramArr[0];
-      let tag = paramArr[1];
-      this.tag(id,tag)
+      let tags = paramArr.slice(1);
+      tags = tags.join(",")
+      this.tag(id,tags)
       break;
       case "delete":
       this.deleteTask(parameter)
-      // this.view.confirmDeleteTask(parameter)
       break;
       case "check":
       this.complete(parameter)
-      // this.view.confirmCompleteTask(parameter)
       break;
       case "uncheck":
       this.uncomplete(parameter)
-      // this.view.confirmUncompleteTask(parameter)
       break;
       case "list:outstanding":
       if (parameter == "asc" || parameter == '') {
@@ -63,8 +60,6 @@ class Controller {
       } else {
         this.view.showErrorParameter();
       }
-      // this.ascOutStanding();
-      // this.dscOutStanding();
       break;
       case "list:completed":
       if (parameter == "asc") {
@@ -79,7 +74,6 @@ class Controller {
       this.uncomplete();
       break;
       case "filter":
-      break;
       this.filterByTag(parameter);
       break;
       case undefined:
@@ -87,6 +81,7 @@ class Controller {
       break;
       default:
       this.view.showErrorCommand()
+      break;
     }
   }
   
@@ -101,7 +96,9 @@ class Controller {
   }
 
   showTasks() {
-    db.Task.findAll()
+    db.Task.findAll({
+      order: [['id','ASC']]
+    })
     .then((data) =>{
       this.view.showTaskList(data)
     })
@@ -164,7 +161,7 @@ class Controller {
       {where:{'id':id}}
     )
     .then( task => {
-      this.view.confirmCompleteTask(task.task)
+      this.view.confirmCompleteTask(id)
     })
     .catch(err => {
       this.view.showErrorQuery(err)
@@ -173,11 +170,11 @@ class Controller {
   
   uncomplete (id) {
     db.Task.update(
-      {complete:true},
+      {complete:false},
       {where:{'id':id}}
     )
     .then( task => {
-      this.view.confirmCompleteTask(task.task)
+      this.view.confirmUncompleteTask(id)
     })
     .catch(err => {
       this.view.showErrorQuery(err)
@@ -187,10 +184,13 @@ class Controller {
   
   filterByTag(tag) {
     db.Task.findAll(
-      {where : {'tag' : tag}}
+      {where : {
+        tag : {
+          $like : `%${tag}%`
+        }
+      }}
     )
     .then( tasks => {
-      console.log(tasks);
       this.view.showTaskList(tasks)
     })
     .catch(err => {
@@ -236,7 +236,7 @@ class Controller {
   
   dscComplete () {
     db.Task.findAll(
-      { order : ['id', "DESC"]}
+      { order : [['id', "DESC"]]}
     )
     .then(tasks => {
       this.view.showTaskList(tasks)
@@ -313,12 +313,12 @@ class View {
     console.log(`Task ${taskID} deleted`);
   }
 
-  confirmCompleteTask(taskName) {
-    console.log(`Task ${taskName} completed, Awesome !`);
+  confirmCompleteTask(id) {
+    console.log(`Task ${id} completed, Awesome !`);
   }
 
-  confirmUncompleteTask(taskName) {
-    console.log(`Task ${taskName} mark as uncomplete`);
+  confirmUncompleteTask(id) {
+    console.log(`Task ${id} mark as uncomplete`);
   }
 
   confirmAddedTag(id, tag) {
