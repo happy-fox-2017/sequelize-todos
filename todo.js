@@ -25,63 +25,63 @@ class Controller {
     let parameter = process.argv.slice(3).join(" ")
     switch (command) {
       case "help":
-      this.view.showHelp()
-      break;
+        this.view.showHelp()
+        break;
       case "list":
-      this.showTasks()
-      break;
+        this.showTasks()
+        break;
       case "add":
-      return this.add(new Task(parameter))
-      break;
+        this.add(new Task(parameter))
+        break;
       case "task":
-      this.showTask(parameter);
-      break;
+        this.showTask(parameter);
+        break;
       case "tag":
-      let paramArr = parameter.split(" ");
-      let id = paramArr[0];
-      let tags = paramArr.slice(1);
-      tags = tags.join(",")
-      this.tag(id,tags)
-      break;
+        let paramArr = parameter.split(" ");
+        let id = paramArr[0];
+        let tags = paramArr.slice(1);
+        tags = tags.join(",")
+        this.tag(id,tags)
+        break;
       case "delete":
-      this.deleteTask(parameter)
-      break;
+        this.deleteTask(parameter)
+        break;
       case "check":
-      this.complete(parameter)
-      break;
+        this.complete(parameter)
+        break;
       case "uncheck":
-      this.uncomplete(parameter)
-      break;
+        this.uncomplete(parameter)
+        break;
       case "list:outstanding":
-      if (parameter == "asc" || parameter == '') {
-        this.ascOutStanding()
-      } else if (parameter == "dsc") {
-        this.dscOutStanding()
-      } else {
-        this.view.showErrorParameter();
-      }
-      break;
+        if (parameter == "asc" || parameter == '') {
+          this.ascOutStanding()
+        } else if (parameter == "dsc") {
+          this.dscOutStanding()
+        } else {
+          this.view.showErrorParameter();
+        }
+        break;
       case "list:completed":
-      if (parameter == "asc") {
-        this.ascComplete()
-      } else if (parameter == "dsc") {
-        this.dscComplete()
-      } else {
-        this.ascComplete();
-      }
-      break;
+        if (parameter == "asc") {
+          this.ascComplete()
+        } else if (parameter == "dsc") {
+          this.dscComplete()
+        } else {
+          this.ascComplete();
+        }
+        break;
       case "list:uncompleted":
-      this.uncomplete();
-      break;
+        this.uncomplete();
+        break;
       case "filter":
-      this.filterByTag(parameter);
-      break;
+        this.filterByTag(parameter);
+        break;
       case undefined:
-      this.view.showHelp()
-      break;
+        this.view.showHelp()
+        break;
       default:
-      this.view.showErrorCommand()
-      break;
+        this.view.showErrorCommand()
+        break;
     }
   }
   
