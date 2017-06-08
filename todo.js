@@ -32,9 +32,9 @@ class View {
     db.Todo.read(Todos => {
       Todos.forEach(Todos => {
         if (Todos.completed === true) {
-          console.log(`${Todos.id} ✓ ${Todos.task}`);
+          console.log(`${Todos.id}. ${Todos.task} ✓✓`);
         } else {
-          console.log(`${Todos.id} ✘ ${Todos.task}`);
+          console.log(`${Todos.id}. ${Todos.task} ✘✘`);
         }
       })
     })
