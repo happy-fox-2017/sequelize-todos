@@ -1,262 +1,240 @@
 "use strict"
 
-let fs = require("fs");
+const db = require ('./models'); //require models
 
-
-// Models
 class Model {
-  constructor() {
-     this.syncFile = "./data.json";
-  }
-   rData() { //r for read
-    let parseData = JSON.parse(fs.readFileSync(this.syncFile, "utf8"));
-    return parseData
+
+  createTask(task){
+    db.Todo.create({
+      task: task,
+      completed: false,
+      tags: null,
+      createAt : new Date(),
+      updatedAt : new Date()
+    })
+    .then(Todo => {
+      console.log(`${task} berhasil ditambahkan!`);
+    })
+    .catch( (err) => {
+      console.log(err);
+    })
   }
 
-   wData(data) { //w for write
-    fs.writeFileSync(this.syncFile, JSON.stringify(data, null, 3));
-  }
-
-   sortId(data) {
-    for (let i = 0; i < data.length; i++) {
-      data[i].id = i+1;
-    }
-    return data;
-  }
-
-   add(task) {
-    let data = this.rData();
-    let object = {
-      "id": 0,
-      "task": task,
-      "completed": false,
-      "created_at": new Date(),
-      // "completed_at": "",
-      "tags": []
-    };
-    data.push(object);
-    data = this.sortId(data)
-    this.wData(data);
-    console.log(`Added ${object.task} to your TODO list...`);
-  }
-
-  addTag(id, tags) {
-    let data = this.rData();
-    for (let i = 0; i < data.length; i++) {
-      if (data[i].id == id) {
-        data[i].tags = tags;
-        console.log(`Tagged task ${data[i].task} with tags: ${data[i].tags}`);
-        break;
+  removeTask(taskID){
+    db.Todo.destroy({
+      where: {
+        id: taskID
       }
-    }
-    this.wData(data);
+    }).then(() => {
+      console.log('Task successfully removed!');
+    })
+    .catch((err) => {
+      console.log(err);
+    })
   }
 
-  deleting(id) {
-    let data = this.rData();
-    for (let i = 0; i < data.length; i++) {
-      if (data[i].id == id) {
-        data.splice(i, 1);
-        break;
-      }
-    }
-    data = this.sortId(data)
-    this.wData(data);
-    console.log(`Deleted data with id: ${id} from your TODO list...`);
-  }
-
-  Complete(id) {
-    let data = this.rData();
-    for (let i = 0; i < data.length; i++) {
-      if (data[i].id == id) {
-        data[i].completed = true;
-        data[i].completed_at = new Date();
-        break;
-      }
-    }
-    this.wData(data);
-  }
-
-  uncomplete(id) {
-    let data = this.rData();
-    for (let i = 0; i < data.length; i++) {
-      if (data[i].id == id) {
-        data[i].completed = false;
-        break;
-      }
-    }
-    this.wData(data);
-  }
-
-  sortAsc(data) {
-    let data2 = data.sort((a,b) => {
-      return new Date(a.created_at) - new Date(b.created_at);
-    });
-    data2 = this.sortId(data2);
-    return data2;
-  }
-
- sortDsc(data) {
-    let data2 = data.sort((a,b) => {
-      return new Date(b.created_at) - new Date(a.created_at);
-    });
-    data2 = this.sortId(data2);
-    return data2;
-  }
-
-  sortBy(data, sortType) {
-   if (sortType == "asc") {
-     let data2 = this.sortAsc(data);
-     return data2;
-   }
-   else if (sortType == "desc") {
-     let data2 = this.sortDsc(data);
-     return data2;
-   }
-   else {
-     let data2 = this.sortAsc(data);
-     return data2;
-   }
- }
-
-  listOutstanding(sortType) {
-   let data = this.rData();
-   if (data.length > 0) {
-     let data2 = this.sortBy(data, sortType);
-     for (let i = 0; i < data.length; i++) {
-       console.log(`${data2[i].id}. [${data2[i].completed ? "X" : " "}] ${data2[i].task} Date created: ${data2[i].created_at}`);
-     }
-   }
-   else {
-     console.log("Empty tasks");
-   }
- }
-
-
-   listCompleted(sortType) {
-    let data = this.rData();
-    if (data.length > 0) {
-      let data2 = this.sortBy(data, sortType);
-      for (let i = 0; i < data.length; i++) {
-        if (data2[i].completed === true) {
-          console.log(`${data2[i].id}. [${data2[i].completed ? "X" : " "}] ${data2[i].task} Date completed: ${data2[i].completed_at}`);
+  getList(){
+    db.Todo.findAll()
+    .then(list => {
+      list.forEach(todo => {
+        if(todo.completed === true) {
+          console.log(`${todo.id}. ✔︎ ${todo.task}`);
+        } else {
+          console.log(`${todo.id}. ◎ ${todo.task}`);
         }
+      })
+    })
+  }
+
+  markComplete(id){
+    db.Todo.update({
+      completed: true
+    }, {
+      where: {
+        id: id
       }
-    }
-    else {
-      console.log("Empty tasks");
-    }
+    })
+    .then( () => {
+      console.log(`update task ${id} success`);
+    })
   }
 
-
-}
-
-
-// View
-class View {
-  constructor() {
-
-  }
-  help() {
-    let displayMenu = ["$ node todo.js # will call help", "$ node todo.js help",
-    "$ node todo.js list", "$ node todo.js add <task_content>",
-    "$ node todo.js task <task_id>", "$ node todo.js delete <task_id>",
-    "$ node todo.js complete <task_id>", "$ node todo.js uncomplete <task_id>",
-    "$ node todo.js list:outstanding asc|desc", "$ node todo.js list:completed asc|desc",
-    "$ node todo.js tag <task_id> <tag_name_1> <tag_name_2> ... <tag_name_N>",
-    "$ node todo.js filter:<tag_name>"];
-    console.log(displayMenu.join("\n"));
-  }
-
-   list(data) {
-    if (data.length > 0) {
-      for (let i = 0; i < data.length; i++) {
-        console.log(`${data[i].id}. [${data[i].completed ? "X" : " "}] ${data[i].task}`);
+  markUncomplete(id){
+    db.Todo.update({
+      completed: false
+    }, {
+      where: {
+        id: id
       }
-    }
-    else {
-      console.log("Empty tasks");
-    }
+    })
+    .then( () => {
+      console.log(`update task ${id} uncompleted`);
+    })
   }
-}
 
-// Controller
+  uncompletedList(){
+    db.Todo
+    .findAll({
+      where: {
+        completed: false
+      },
+      order:'"createdAt" ASC'
+    })
+    .then(Todo => {
+      Todo.forEach(Todo => {
+        console.log(`${Todo.id}. ◎ ${Todo.task}`);
+      })
+    })
+    .catch( (err) => {
+      console.log(err);
+    })
+  }
+
+  completedList(){
+    db.Todo
+    .findAll({
+      where: {
+        completed: true
+      },
+      order:'"createdAt" ASC'
+    })
+    .then(Todo => {
+      Todo.forEach(Todo => {
+        console.log(`${Todo.id}. ✔︎ ${Todo.task}`);
+      })
+    })
+    .catch( (err) => {
+      console.log(err);
+    })
+  }
+
+  createTag(id, tag) {
+    db.Todo
+    .update({
+      tags: tag
+    }, {
+      where: {
+        id: id
+      }
+    })
+    .then( () => {
+      console.log(`Your task has been tagged`);
+    })
+  }
+
+  getListByTag(tag){
+    db.Todo
+    .findAll({
+      where: {
+        tags: tag
+      },
+      order:'"createdAt" ASC'
+    })
+    .then(Todo => {
+      Todo.forEach(Todo => {
+        console.log(`${Todo.id}. ◎ ${Todo.task} [Tag: ${Todo.tags}]`);
+      })
+    })
+    .catch( (err) => {
+      console.log(err);
+    })
+  }
+
+}//class model
+
+class View{
+  displayTask() {
+
+  }
+
+  helpMenu(){
+    console.log("⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾");
+    console.log("====================== H E L P   M E N U =========================");
+    console.log("⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾⌾");
+    console.log("Option : ");
+    console.log("#(1) node todo.js list                         ➤show all list todo");
+    console.log("#(2) node todo.js add <task content>              ➤adding new task");
+    console.log("#(3) node todo.js delete <task ID>                  ➤deleting task");
+    console.log("#(4) node todo.js completed <task ID>           ➤Mark as completed");
+    console.log("#(5) node todo.js uncompleted <task ID>       ➤Mark as uncompleted");
+    console.log("#(6) node todo.js list:completed              ➤show completed list");
+    console.log("#(7) node todo.js list:outstanding          ➤show uncompleted list");
+    console.log("#(8) node todo.js tag <task ID> <tag>                ➤Tagging task");
+    console.log("#(9) node todo.js filter <tag>                       ➤Tagging task");
+    console.log("==================================================================");
+  }
+}//class view
+
 class Controller {
   constructor() {
     this.model = new Model();
     this.view = new View();
   }
 
-  filter(tag) {
-   let data = this.model.rData();
-   for (let i = 0; i < data.length; i++) {
-     for (let j = 0; j < data[i].tags.length; j++) {
-       if (data[i].tags[j] === tag) {
-         console.log(`${data[i].id}. ${data[i].task} [${data[i].tags}]`);
-         break;
-       }
-     }
-   }
- }
-
- rAct(id) {
-  let data = this.model.rData();
-  if(data.length > 0){
-    for (let i = 0; i < data.length; i++) {
-      if (data[i].id == id) {
-        console.log(`${data[i].id}. ${data[i].task}`);
-      }
-    }
+  help(){
+    return this.view.helpMenu()
   }
- }
 
-   run(param) {
-    switch (param[0]) {
-      case "help":
-        this.view.help();
-        break;
-      case "list":
-        this.view.list(this.model.rData());
-        break;
-      case "list:outstanding":
-        this.model.listOutstanding(param[1]);
-        break;
-      case "list:completed":
-        this.model.listCompleted(param[1]);
-        break;
-      case "add":
-        param.shift();
-        this.model.add(param.join(" "));
-        break;
-      case "task":
-        this.rAct(param[1]);
-        break;
-      case "delete":
-        this.model.deleting(param[1]);
-        break;
-      case "complete":
-        this.model.Complete(param[1]);
-        break;
-      case "uncomplete":
-        this.model.uncomplete(param[1]);
-        break;
-      case "tag":
-        let paramCopy = param.slice("");
-        paramCopy.shift();
-        paramCopy.shift();
-        this.model.addTag(param[1], paramCopy);
-        break;
-      case "filter:":
-        this.filter(param[1]);
-        break;
-      default:
-        this.view.help();
-        break;
-    }
+  addTask(task) {
+    return this.model.createTask(task);
   }
-}
 
-// Driver code
-let arg = process.argv.slice(2, process.argv.length);
+  listAll() {
+    return this.model.getList();
+  }
+
+  del(taskID) {
+    return this.model.removeTask(taskID);
+  }
+
+  updateComplete(id){
+    return this.model.markComplete(id);
+  }
+
+  unComplete(id){
+    return this.model.markUncomplete(id);
+  }
+
+  uncompletedList(){
+    return this.model.uncompletedList();
+  }
+
+  completedList(){
+    return this.model.completedList();
+  }
+
+  tagTask(id, tag) {
+    return this.model.createTag(id, tag)
+  }
+
+  tagList(tag) {
+    return this.model.getListByTag(tag)
+  }
+}//class controller
+
+
+
+let command = process.argv.slice(2)
 let controller = new Controller();
-controller.run(arg);
+controller.help()
+
+
+if (command[0] === "add") {
+  controller.addTask(command.slice(1).join(' '));
+} else if (command[0] === "list") {
+  controller.listAll();
+} else if (command[0] === "delete") {
+  controller.del(command.slice(1));
+} else if (command[0] === "completed") {
+  controller.updateComplete(command.slice(1));
+} else if (command[0] === "uncompleted") {
+  controller.unComplete(command.slice(1));
+} else if (command[0] === "list:outstanding") {
+  controller.uncompletedList();
+} else if (command[0] === "list:completed") {
+  controller.completedList();
+} else if (command[0] === "tag") {
+  controller.tagTask(command[1], command.slice(2).join(','));
+} else if (command[0] === "filter") {
+  controller.tagList(command.slice(1));
+}

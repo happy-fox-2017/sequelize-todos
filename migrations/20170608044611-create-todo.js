@@ -2,6 +2,7 @@
 module.exports = {
   up: function(queryInterface, Sequelize) {
     return queryInterface.createTable('Todos', {
+
       id: {
         allowNull: false,
         autoIncrement: true,
