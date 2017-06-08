@@ -1,0 +1,9 @@
+{
+  "development": {
+    "username": "hacktiv8-1",
+    "password": null,
+    "database": "Todolist",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  }
+}
