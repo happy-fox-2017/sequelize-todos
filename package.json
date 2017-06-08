@@ -9,6 +9,7 @@
   "author": "Your Name",
   "license": "ISC",
   "dependencies": {
+    "argv": "0.0.2",
     "pg": "^6.0.3",
     "pg-hstore": "^2.3.2",
     "sequelize": "^3.23.6"

@@ -9,14 +9,24 @@ module.exports = function(sequelize, DataTypes) {
       associate: function(models) {
         // associations can be defined here
       },
-      getAllData(callback) {
-        Todos.findAll()
+
+      read(callback) {
+        Todo.findAll()
         .then( data => {
           return callback(data);
         }
         )
-      }
-    }
+      } // read
+
+      // update
+
+    }, //classMethods
+
+
+    instanceMethods: {
+
+    } // instanceMethods
+
   });
-  return Todos;
+  return Todo;
 };
