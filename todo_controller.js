@@ -74,13 +74,35 @@ class TodoController {
   }
 
   handleAddTodo(taskDescription) {
-    this.todoDataService.addTodo(taskDescription);
-    TodoView.showMessage(`Appended ${taskDescription} to your TODO list...`);
+    // this.todoDataService.addTodo(taskDescription);
+    // TodoView.showMessage(`Appended ${taskDescription} to your TODO list...`);
+    Todo.create({
+      task: taskDescription
+    })
+    .then(() => {
+      TodoView.showMessage(`Appended ${taskDescription} to your TODO list...`);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
   }
 
   handleDeleteTodo(taskId) {
-    this.todoDataService.deleteTodo(taskId);
-    TodoView.showMessage(`Task with id (${taskId}) has been deleted...`);
+    // this.todoDataService.deleteTodo(taskId);
+    // TodoView.showMessage(`Task with id (${taskId}) has been deleted...`);
+    Todo.destroy({ where: {
+      id: taskId
+    }})
+    .then(() => {
+       TodoView.showMessage(`Task with id (${taskId}) has been deleted...`);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+
+
+
+
   }
 
   handleViewTodo(taskId) {
