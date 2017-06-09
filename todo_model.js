@@ -166,6 +166,11 @@ class TodoDataService {
     });
   }
 }
+//
+// const Sequelize = require('sequelize');
+// const sequelize = new Sequelize();
+//
+// let db =
 
 module.exports = {
   Todo,

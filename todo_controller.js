@@ -4,6 +4,7 @@ const TodoModel = require('./todo_model');
 const models = require('./models');
 
 const Todo = models.Todo;
+const Tag = models.Tag;
 
 const TodoDataService = TodoModel.TodoDataService;
 const FILE_NAME = 'data.json';
@@ -120,12 +121,29 @@ class TodoController {
   }
 
   handleAddTags(taskId, tags) {
-    try {
-      const modifiedTodo = this.todoDataService.addTags(taskId, tags);
-      TodoView.showMessage(`Tagged task "${modifiedTodo.task}" with tags: ${modifiedTodo.tags.join(', ')}`);
-    } catch (err) {
-      TodoView.showError(err.toString());
+    // try {
+    //   const modifiedTodo = this.todoDataService.addTags(taskId, tags);
+    //   TodoView.showMessage(`Tagged task "${modifiedTodo.task}" with tags: ${modifiedTodo.tags.join(', ')}`);
+    // } catch (err) {
+    //   TodoView.showError(err.toString());
+    // }
+    const promises = [];
+    for(let i = 0; i < tags.length; i += 1) {
+      const tagtext = tags[i];
+      promises.push(Tag.create({tagtext: tagtext}));
     }
+
+    Promise.all(promises).then((values) => {
+        Todo.findOne({ where: { id: taskId}})
+        .then((todo) => {
+          todo.setTags(values)
+          .then(() => {
+            TodoView.showMessage(`Tagged todo "${todo.task}"`);
+            return true;
+          })
+        });
+    })
+
   }
 
   handleExtendedCommand(commands) {

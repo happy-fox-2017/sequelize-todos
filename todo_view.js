@@ -38,7 +38,11 @@ class TodoView {
       // console.log(`${i + 1}. [${completedMark}] ${todo.task} (${todo.tags.join(', ')})`);
 
       const completedMark = 'x';
-      console.log(`${i + 1}. [${completedMark}] ${todo.task}`);
+      todo.getTags().then((tags) => {
+        const tagsArr = tags.map((theTag) => theTag.tagtext);
+        console.log(`${todo.id}. [${completedMark}] ${todo.task} (${tagsArr.join(', ')})`);
+      });
+
 
     }
   }

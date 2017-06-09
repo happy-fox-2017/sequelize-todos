@@ -2,6 +2,7 @@ const assert = require('assert');
 const models = require('../models');
 
 const Todo = models.Todo;
+const Tag = models.Tag;
 
 describe('Todo', function() {
 
@@ -105,6 +106,34 @@ describe('Todo', function() {
       .then((row) => {
         assert.equal(null, row);
         done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+    });
+  });
+
+  describe('#create with tag()', function() {
+    before(function (done) {
+      Todo.destroy({ where: {} }).then(() => done());
+    });
+
+    it('should create todo and tag without error', function (done) {
+      Tag.create({
+        tagtext: 'vacation'
+      })
+      .then((tag) => {
+        Todo.create({
+          task: 'Walk the dog'
+        }).then((todo) => {
+          todo.setTags([tag])
+          .then(() => {
+            todo.getTags().then((tags) => {
+              assert.equal(1, tags.length);
+              done();
+            });
+          });
+        })
       })
       .catch((err) => {
         done(err);
