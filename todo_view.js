@@ -40,7 +40,7 @@ class TodoView {
       const completedMark = todo.getCompleted() ? 'X' : ' ';
       todo.getTags().then((tags) => {
         const tagsArr = tags.map((theTag) => theTag.tagtext);
-        console.log(`${todo.id}. [${completedMark}] ${todo.task} (${tagsArr.join(', ')})`);
+        console.log(`${todo.id}. [${completedMark}] ${todo.task} (${tagsArr.join(', ')}) ${todo.createdAt}`);
       });
 
 

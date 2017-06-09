@@ -124,6 +124,7 @@ class TodoController {
     Todo.findOne({ where: { id: taskId}})
     .then((todo)=>{
       todo.status = 1;
+      todo.completedAt = new Date();
       todo.save()
       .then( () => {
         // console.log(todo);
@@ -138,6 +139,7 @@ class TodoController {
     Todo.findOne({ where: { id: taskId}})
     .then((todo)=>{
       todo.status = 0;
+      todo.completedAt = null;
       todo.save()
       .then( () => {
         // console.log(todo);
@@ -146,13 +148,38 @@ class TodoController {
   }
 
   handleListOutstanding(sorting) {
-    const todoList = this.todoDataService.getOutstandingTodoList(sorting);
-    TodoView.showTodoList(todoList);
+    // const todoList = this.todoDataService.getOutstandingTodoList(sorting);
+    // TodoView.showTodoList(todoList);
+
+    Todo.findAll()
+    .then((todoList) => {
+      todoList = todoList.filter(todo => !todo.getCompleted());
+      if (sorting === 'DESC') {
+        todoList = todoList.sort((todo1, todo2) => todo2.createdAt - todo1.createdAt);
+      } else {
+        todoList = todoList.sort((todo1, todo2) => todo1.createdAt - todo2.createdAt);
+      }
+      TodoView.showTodoList(todoList);
+    })
+
+
+
   }
 
   handleListCompleted(sorting) {
-    const todoList = this.todoDataService.getCompletedTodoList(sorting);
-    TodoView.showTodoList(todoList);
+    // const todoList = this.todoDataService.getCompletedTodoList(sorting);
+    // TodoView.showTodoList(todoList);
+
+    Todo.findAll()
+    .then((todoList) => {
+      todoList = todoList.filter(todo => todo.getCompleted());
+      if (sorting === 'DESC') {
+        todoList = todoList.sort((todo1, todo2) => todo2.completedAt - todo1.completedAt);
+      } else {
+        todoList = todoList.sort((todo1, todo2) => todo1.completedAt - todo2.completedAt);
+      }
+      TodoView.showTodoList(todoList);
+    })
   }
 
   handleAddTags(taskId, tags) {
@@ -185,8 +212,17 @@ class TodoController {
     const matchCommands = commands[0].match(/(filter):(\w+)/) || [];
     if (matchCommands.length > 0 && matchCommands[1] === 'filter') {
       const tag = matchCommands[2];
-      const todoList = this.todoDataService.getTodoListByTag(tag);
-      TodoView.showTodoList(todoList);
+      // const todoList = this.todoDataService.getTodoListByTag(tag);
+      // TodoView.showTodoList(todoList);
+      Todo.findAll({
+        include: [{
+          model: Tag,
+          where: { tagtext: tag}
+        }]
+      })
+      .then((rows) => {
+        TodoView.showTodoList(rows);
+      })
     } else {
       TodoController.handleUnknownCommand();
     }
