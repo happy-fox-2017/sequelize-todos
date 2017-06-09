@@ -115,21 +115,34 @@ class TodoController {
   }
 
   handleCompleteTodo(taskId) {
-    try {
-      this.todoDataService.completeTodo(taskId);
-      TodoView.showMessage(`Task with id (${taskId}) has been completed...`);
-    } catch (err) {
-      TodoView.showError(err.toString());
-    }
+    // try {
+    //   this.todoDataService.completeTodo(taskId);
+    //   TodoView.showMessage(`Task with id (${taskId}) has been completed...`);
+    // } catch (err) {
+    //   TodoView.showError(err.toString());
+    // }
+    Todo.findOne({ where: { id: taskId}})
+    .then((todo)=>{
+      todo.status = 1;
+      todo.save()
+      .then( () => {
+        // console.log(todo);
+      })
+    })
+
+
+
   }
 
   handleUncompleteTodo(taskId) {
-    try {
-      this.todoDataService.UncompleteTodo(taskId);
-      TodoView.showMessage(`Task with id (${taskId}) changed to Uncompleted...`);
-    } catch (err) {
-      TodoView.showError(err.toString());
-    }
+    Todo.findOne({ where: { id: taskId}})
+    .then((todo)=>{
+      todo.status = 0;
+      todo.save()
+      .then( () => {
+        // console.log(todo);
+      })
+    })
   }
 
   handleListOutstanding(sorting) {
