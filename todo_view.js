@@ -23,7 +23,12 @@ class TodoView {
   }
 
   static showTodo(todo) {
-    console.log(todo);
+    // console.log(`${todo.task}, ${todo.task}`);
+    const completedMark = todo.getCompleted() ? 'X' : ' ';
+    todo.getTags().then((tags) => {
+      const tagsArr = tags.map((theTag) => theTag.tagtext);
+      console.log(`(${todo.id}) [${completedMark}] ${todo.task} (${tagsArr.join(', ')}) ${todo.createdAt}`);
+    });
   }
 
   static showError(message) {

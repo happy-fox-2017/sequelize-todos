@@ -64,9 +64,7 @@ class TodoController {
   handleListTodo() {
     // const todoList = this.todoDataService.getTodoList();
 
-    Todo.findAll({
-      task: 'Walk the dog'
-    })
+    Todo.findAll()
     .then((rows) => {
       TodoView.showTodoList(rows);
     })
@@ -106,12 +104,17 @@ class TodoController {
   }
 
   handleViewTodo(taskId) {
-    try {
-      const todo = this.todoDataService.getTodoById(taskId);
+    // try {
+    //   const todo = this.todoDataService.getTodoById(taskId);
+    //   TodoView.showTodo(todo);
+    // } catch (err) {
+    //   TodoView.showError(err.toString());
+    // }
+
+    Todo.findOne({ where: { id: taskId}})
+    .then((todo)=>{
       TodoView.showTodo(todo);
-    } catch (err) {
-      TodoView.showError(err.toString());
-    }
+    })
   }
 
   handleCompleteTodo(taskId) {
