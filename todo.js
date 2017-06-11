@@ -239,7 +239,7 @@ class Controller {
       { order : [['id', "DESC"]]}
     )
     .then(tasks => {
-      this.view.showTaskList(tasks)
+      this.view.showCompletedTask(tasks)
     })
     .catch(err => {
       this.view.showErrorQuery(err)
