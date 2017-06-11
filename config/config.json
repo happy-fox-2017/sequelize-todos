@@ -1,9 +1,11 @@
 {
   "development": {
     "username": "postgres",
-    "password": "postgres",
-    "database": "sequelizeTodo",
+    "password": "12345",
+    "database": "seqTodo",
     "host": "127.0.0.1",
-    "dialect": "postgres"
+    "dialect": "postgres",
+    "port":"5432",
+    "logging":false
   }
 }
